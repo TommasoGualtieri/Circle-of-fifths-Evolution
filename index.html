@@ -136,4 +136,91 @@
     function getNoteAt(keyIdx, semitones) {
         let root = data[keyIdx].maj.replace('♭','b').replace('♯','#');
         // Normalizzazione per il sistema
-        const map = {"Gb":"F#", "Db":"C#", "Ab":"G#", "Eb":"D#", "Bb":"A
+        const map = {"Gb":"F#", "Db":"C#", "Ab":"G#", "Eb":"D#", "Bb":"A#"};
+        root = map[root] || root;
+        let startIdx = chromatic.indexOf(root.replace('b','#'));
+        return chromatic[(startIdx + semitones) % 12];
+    }
+
+    function init() {
+        data.forEach((item, i) => {
+            const angle = (i * 30 - 90) * (Math.PI / 180);
+            const x = 210 + 165 * Math.cos(angle), y = 210 + 165 * Math.sin(angle);
+            const btn = document.createElement('div');
+            btn.className = 'note-btn'; btn.style.left = x+'px'; btn.style.top = y+'px';
+            btn.innerHTML = `<b>${item.maj}</b><small>${item.min}</small>`;
+            btn.onclick = () => update(i); btn.id = 'btn-'+i;
+            document.getElementById('circle').appendChild(btn);
+
+            const row = document.createElement('div');
+            row.className = 'sig-row'; row.id = 'sig-'+i;
+            row.innerHTML = `<span>${item.maj}</span><span style="color:var(--accent-gold)">${item.alts}</span>`;
+            row.onclick = () => update(i);
+            document.getElementById('sig-list').appendChild(row);
+        });
+        update(0);
+    }
+
+    function update(idx) {
+        const s = data[idx];
+        document.querySelectorAll('.note-btn, .sig-row').forEach(el => el.classList.remove('active'));
+        document.getElementById('btn-'+idx).classList.add('active');
+        document.getElementById('sig-'+idx).classList.add('active');
+
+        // Markers
+        [0, 2, 4, -1, 1, 3, 5].forEach((offset, i) => {
+            const pos = (idx + offset + 12) % 12;
+            const angle = (pos * 30 - 90) * (Math.PI / 180);
+            const dot = document.getElementById('deg-'+i);
+            dot.style.left = (210 + 115 * Math.cos(angle) - 11) + 'px';
+            dot.style.top = (210 + 115 * Math.sin(angle) - 11) + 'px';
+        });
+
+        // Tabella Standard
+        document.getElementById('maj-body').innerHTML = `<tr>${s.notes.map((n, i) => 
+            `<td onclick="addCh('${n}${majQ[i]}', ${i})"><span class="row-label">Grado ${i+1}</span><span class="chord-name">${n}${majQ[i]}</span></td>`).join('')}</tr>`;
+
+        // ARMONIA AVANZATA (Logica integrata)
+        const v2 = getNoteAt(idx, 9) + "7"; // V/ii
+        const v5 = getNoteAt(idx, 2) + "7"; // V/V
+        const subV = getNoteAt(idx, 1) + "7"; // SubV7
+        const ivM = getNoteAt(idx, 5) + "m6"; // iv minor (Modal Interchange)
+        const bVII = getNoteAt(idx, 10) + "7"; // bVII7 (Backdoor)
+
+        document.getElementById('adv-row-1').innerHTML = `
+            <td colspan="2" onclick="addCh('${v2}', -1)"><span class="row-label adv-label">Dom. Secondaria (V/ii)</span><b>${v2}</b></td>
+            <td colspan="2" onclick="addCh('${v5}', -1)"><span class="row-label adv-label">Dom. Secondaria (V/V)</span><b>${v5}</b></td>
+            <td colspan="3" onclick="addCh('${subV}', -1)"><span class="row-label adv-label">Sost. Tritono (SubV7)</span><b>${subV}</b></td>`;
+        
+        document.getElementById('adv-row-2').innerHTML = `
+            <td colspan="3" onclick="addCh('${ivM}', -1)"><span class="row-label adv-label">Interscambio (iv min)</span><b>${ivM}</b></td>
+            <td colspan="4" onclick="addCh('${bVII}', -1)"><span class="row-label adv-label">Backdoor (bVII7)</span><b>${bVII}</b></td>`;
+    }
+
+    function addCh(name, deg) {
+        const div = document.createElement('div');
+        div.className = 'prog-chord'; div.innerText = name;
+        document.getElementById('prog-display').appendChild(div);
+        
+        // Suggerimenti rapidi (Logica semplificata)
+        const list = document.getElementById('sug-list');
+        list.innerHTML = '<small>Suggeriti: </small>';
+        const sug = deg === 4 ? [0] : [4, 3, 5]; // Se clicchi V suggerisci I, altrimenti IV, V, vi
+        sug.forEach(sIdx => {
+            const n = data[currentIdx()].notes[sIdx] + majQ[sIdx];
+            const b = document.createElement('button'); b.className = 'sug-btn'; b.innerText = 'Vai a ' + n;
+            b.onclick = () => addCh(n, sIdx);
+            list.appendChild(b);
+        });
+    }
+
+    function currentIdx() {
+        return data.findIndex(d => d.maj === document.querySelector('.note-btn.active b').innerText);
+    }
+
+    function clearProg() { document.getElementById('prog-display').innerHTML = ''; document.getElementById('sug-list').innerHTML = ''; }
+
+    init();
+</script>
+</body>
+</html>
