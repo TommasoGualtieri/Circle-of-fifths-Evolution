@@ -1,30 +1,139 @@
-function getAdvancedHarmony(idx) {
-    const s = data[idx];
-    const notes = s.notes;
-    
-    return {
-        // Dominanti Temporanee: V7 del grado di destinazione
-        secondaryDominants: [
-            { target: "ii", chord: getNoteAt(idx, 9) + "7" }, // V/ii (La7 in Do)
-            { target: "V", chord: getNoteAt(idx, 2) + "7" }  // V/V (Re7 in Do)
-        ],
-        // Modal Interchange più comuni
-        modalInterchange: [
-            { label: "iv minore", chord: getNoteAt(idx, 5) + "m" }, // Fm in Do
-            { label: "bVI", chord: getNoteAt(idx, 8) + "Maj7" },   // Ab in Do
-            { label: "bVII", chord: getNoteAt(idx, 10) + "7" }    // Bb7 in Do
-        ],
-        // Sostituto di Tritono della Dominante principale
-        subV: getNoteAt(idx, 1) + "7" // Db7 in Do
-    };
-}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic Suite - Professional Edition</title>
+    <style>
+        :root {
+            --primary-green: #66bb6a; --dark-gray: #333; --accent-gold: #ffca28;
+            --bg-light: #f4f7f6; --card-bg: #ffffff; --text-color: #333; --border-color: #eeeeee;
+            --adv-color: #ce93d8; /* Viola per armonia avanzata */
+        }
+        body.dark-mode {
+            --bg-light: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0;
+            --border-color: #333; --dark-gray: #f4f7f6;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); margin: 0; padding: 20px; color: var(--text-color); transition: 0.3s; }
+        .dashboard { display: flex; max-width: 1450px; margin: 0 auto; gap: 20px; }
+        
+        .sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
+        .side-card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .side-card h3 { margin-top: 0; font-size: 0.9em; border-bottom: 2px solid var(--primary-green); padding-bottom: 8px; margin-bottom: 10px; }
+        
+        .sig-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-color); font-size: 0.8em; cursor: pointer; }
+        .sig-row.active { color: var(--primary-green); font-weight: bold; }
 
-// Funzione di utilità per saltare tra i semitoni nel cerchio cromatico
-function getNoteAt(keyIdx, semitones) {
-    const chromatic = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    // Trova la tonica nel cerchio cromatico
-    let startIdx = chromatic.indexOf(data[keyIdx].maj.replace('♭','b').replace('♯','#'));
-    if(startIdx === -1) startIdx = chromatic.indexOf(convertToSharp(data[keyIdx].maj));
-    
-    return chromatic[(startIdx + semitones) % 12];
-}
+        .memo-table { width: 100%; border-collapse: collapse; font-size: 0.7em; }
+        .memo-table td { padding: 6px 2px; border-bottom: 1px solid var(--border-color); }
+
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+        .circle-wrapper { position: relative; width: 420px; height: 420px; background: var(--card-bg); border-radius: 50%; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        
+        .note-btn { position: absolute; width: 66px; height: 66px; margin: -33px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; background: var(--primary-green); color: white; border: 4px solid var(--card-bg); font-size: 0.9em; }
+        .note-btn.active { background: #444; transform: scale(1.1); }
+        .degree-marker { position: absolute; width: 22px; height: 22px; background: var(--accent-gold); border-radius: 50%; font-size: 9px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10; border: 2px solid white; }
+
+        .info-card { width: 100%; background: var(--card-bg); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); overflow: hidden; }
+        .card-header { background: rgba(0,0,0,0.03); padding: 10px 20px; font-weight: bold; font-size: 0.8em; display: flex; justify-content: space-between; }
+        
+        table.harm-table { width: 100%; border-collapse: collapse; }
+        .harm-table td { padding: 10px 5px; text-align: center; border-top: 1px solid var(--border-color); width: 14.2%; cursor: pointer; font-size: 0.9em; }
+        .chord-name { font-weight: bold; display: block; }
+        .chord-notes { font-size: 0.6em; color: var(--accent-gold); font-family: monospace; }
+        .row-label { font-size: 0.55em; color: #999; display: block; margin-bottom: 2px; }
+
+        .adv-row { background: rgba(206, 147, 216, 0.05); }
+        .adv-label { color: var(--adv-color) !important; }
+
+        .builder-card { width: 100%; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 2px dashed var(--border-color); box-sizing: border-box; }
+        .prog-display { display: flex; gap: 8px; min-height: 50px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+        .prog-chord { background: var(--primary-green); color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+        
+        .sug-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+        .sug-btn { padding: 5px 10px; border-radius: 4px; border: 1px solid var(--primary-green); background: none; color: var(--primary-green); cursor: pointer; font-size: 0.75em; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="sidebar">
+        <div class="side-card">
+            <h3>Tonalità / Alterazioni</h3>
+            <div id="sig-list"></div>
+        </div>
+        <div class="side-card">
+            <h3>Gradi ed Intervalli</h3>
+            <table class="memo-table">
+                <tr><td><b>I</b></td><td>Maj7</td><td>1, 3M, 5G, 7M</td></tr>
+                <tr><td><b>ii</b></td><td>min7</td><td>1, 3m, 5G, 7m</td></tr>
+                <tr><td><b>V</b></td><td>7 (Dom)</td><td>1, 3M, 5G, 7m</td></tr>
+                <tr><td><b>vii°</b></td><td>m7♭5</td><td>1, 3m, 5dim, 7m</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0">Harmonic Dashboard Pro</h2>
+            <button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; border-radius:20px; padding:4px 12px;">🌓 Dark Mode</button>
+        </div>
+
+        <div class="circle-wrapper" id="circle">
+            <div id="deg-0" class="degree-marker">I</div><div id="deg-1" class="degree-marker">ii</div>
+            <div id="deg-2" class="degree-marker">iii</div><div id="deg-3" class="degree-marker">IV</div>
+            <div id="deg-4" class="degree-marker">V</div><div id="deg-5" class="degree-marker">vi</div>
+            <div id="deg-6" class="degree-marker">vii°</div>
+        </div>
+
+        <div class="info-card">
+            <div class="card-header"><span id="maj-label">Maggiore</span></div>
+            <table class="harm-table">
+                <thead><tr style="font-size:0.6em; color:#999;"><th>I</th><th>ii</th><th>iii</th><th>IV</th><th>V</th><th>vi</th><th>vii°</th></tr></thead>
+                <tbody id="maj-body"></tbody>
+            </table>
+        </div>
+
+        <div class="info-card" style="border-color: var(--adv-color);">
+            <div class="card-header" style="background: rgba(206,147,216,0.1);"><span style="color:var(--adv-color)">Armonia Funzionale Avanzata</span></div>
+            <table class="harm-table">
+                <tr id="adv-row-1" class="adv-row"></tr>
+                <tr id="adv-row-2" class="adv-row"></tr>
+            </table>
+        </div>
+
+        <div class="builder-card">
+            <div style="display:flex; justify-content:space-between; font-size:0.75em; margin-bottom:5px;">
+                <strong>Progression Builder</strong>
+                <button onclick="clearProg()" style="cursor:pointer">Clear</button>
+            </div>
+            <div class="prog-display" id="prog-display"></div>
+            <div id="sug-list" class="sug-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const data = [
+        { maj: "C", min: "Am", notes: ["C","D","E","F","G","A","B"], alts: "Nessuna" },
+        { maj: "G", min: "Em", notes: ["G","A","B","C","D","E","F♯"], alts: "F♯" },
+        { maj: "D", min: "Bm", notes: ["D","E","F♯","G","A","B","C♯"], alts: "F♯, C♯" },
+        { maj: "A", min: "F♯m", notes: ["A","B","C♯","D","E","F♯","G♯"], alts: "F♯, C♯, G♯" },
+        { maj: "E", min: "C♯m", notes: ["E","F♯","G♯","A","B","C♯","D♯"], alts: "F♯, C♯, G♯, D♯" },
+        { maj: "B", min: "G♯m", notes: ["B","C♯","D♯","E","F♯","G♯","A♯"], alts: "F♯, C♯, G♯, D♯, A♯" },
+        { maj: "G♭", min: "E♭m", notes: ["G♭","A♭","B♭","C♭","D♭","E♭","F"], alts: "B♭, E♭, A♭, D♭, G♭, C♭" },
+        { maj: "D♭", min: "B♭m", notes: ["D♭","E♭","F","G♭","A♭","B♭","C"], alts: "B♭, E♭, A♭, D♭, G♭" },
+        { maj: "A♭", min: "Fm", notes: ["A♭","B♭","C","D♭","E♭","F","G"], alts: "B♭, E♭, A♭, D♭" },
+        { maj: "E♭", min: "Cm", notes: ["E♭","F","G","A♭","B♭","C","D"], alts: "B♭, E♭, A♭" },
+        { maj: "B♭", min: "Gm", notes: ["B♭","C","D","E♭","F","G","A"], alts: "B♭, E♭" },
+        { maj: "F", min: "Dm", notes: ["F","G","A","B♭","C","D","E"], alts: "B♭" }
+    ];
+
+    const chromatic = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+    const majT = ["", "m", "m", "", "", "m", "°"];
+    const majQ = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7♭5"];
+
+    function getNoteAt(keyIdx, semitones) {
+        let root = data[keyIdx].maj.replace('♭','b').replace('♯','#');
+        // Normalizzazione per il sistema
+        const map = {"Gb":"F#", "Db":"C#", "Ab":"G#", "Eb":"D#", "Bb":"A
