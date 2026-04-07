@@ -3,55 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmonic Suite - Professional Edition</title>
+    <title>Harmonic Dashboard Ultra</title>
     <style>
         :root {
-            --primary-green: #66bb6a; --dark-gray: #333; --accent-gold: #ffca28;
-            --bg-light: #f4f7f6; --card-bg: #ffffff; --text-color: #333; --border-color: #eeeeee;
-            --adv-color: #ce93d8; /* Viola per armonia avanzata */
+            --primary: #66bb6a; --dark-bg: #f4f7f6; --card-bg: #ffffff;
+            --text: #333; --accent: #ffca28; --border: #eeeeee; --adv: #ce93d8;
         }
         body.dark-mode {
-            --bg-light: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0;
-            --border-color: #333; --dark-gray: #f4f7f6;
+            --dark-bg: #121212; --card-bg: #1e1e1e; --text: #e0e0e0; --border: #333;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-light); margin: 0; padding: 20px; color: var(--text-color); transition: 0.3s; }
-        .dashboard { display: flex; max-width: 1450px; margin: 0 auto; gap: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); margin: 0; padding: 20px; color: var(--text); transition: 0.3s; }
+        .dashboard { display: flex; max-width: 1500px; margin: 0 auto; gap: 20px; align-items: flex-start; }
         
-        .sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
-        .side-card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .side-card h3 { margin-top: 0; font-size: 0.9em; border-bottom: 2px solid var(--primary-green); padding-bottom: 8px; margin-bottom: 10px; }
-        
-        .sig-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-color); font-size: 0.8em; cursor: pointer; }
-        .sig-row.active { color: var(--primary-green); font-weight: bold; }
-
-        .memo-table { width: 100%; border-collapse: collapse; font-size: 0.7em; }
-        .memo-table td { padding: 6px 2px; border-bottom: 1px solid var(--border-color); }
+        .sidebar { width: 320px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; }
+        .side-card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.8em; }
+        .side-card h3 { margin-top: 0; border-bottom: 2px solid var(--primary); padding-bottom: 5px; font-size: 1.1em; }
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .circle-wrapper { position: relative; width: 420px; height: 420px; background: var(--card-bg); border-radius: 50%; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .circle-wrapper { position: relative; width: 440px; height: 440px; background: var(--card-bg); border-radius: 50%; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        .note-btn { position: absolute; width: 66px; height: 66px; margin: -33px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; background: var(--primary-green); color: white; border: 4px solid var(--card-bg); font-size: 0.9em; }
+        .note-btn { position: absolute; width: 70px; height: 70px; margin: -35px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; background: var(--primary); color: white; border: 4px solid var(--card-bg); font-weight: bold; }
         .note-btn.active { background: #444; transform: scale(1.1); }
-        .degree-marker { position: absolute; width: 22px; height: 22px; background: var(--accent-gold); border-radius: 50%; font-size: 9px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10; border: 2px solid white; }
+        .degree-marker { position: absolute; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; font-size: 9px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10; border: 2px solid white; transition: 0.5s; }
 
-        .info-card { width: 100%; background: var(--card-bg); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); overflow: hidden; }
-        .card-header { background: rgba(0,0,0,0.03); padding: 10px 20px; font-weight: bold; font-size: 0.8em; display: flex; justify-content: space-between; }
+        .info-card { width: 100%; background: var(--card-bg); border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); overflow: hidden; }
+        .card-header { background: rgba(0,0,0,0.03); padding: 10px 20px; font-weight: bold; font-size: 0.9em; }
         
-        table.harm-table { width: 100%; border-collapse: collapse; }
-        .harm-table td { padding: 10px 5px; text-align: center; border-top: 1px solid var(--border-color); width: 14.2%; cursor: pointer; font-size: 0.9em; }
-        .chord-name { font-weight: bold; display: block; }
-        .chord-notes { font-size: 0.6em; color: var(--accent-gold); font-family: monospace; }
-        .row-label { font-size: 0.55em; color: #999; display: block; margin-bottom: 2px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        td { padding: 10px 2px; text-align: center; border-top: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        td:hover { background: rgba(102, 187, 106, 0.05); }
+        .chord-name { font-weight: bold; display: block; font-size: 1em; }
+        .chord-notes { font-size: 0.65em; color: var(--accent); font-family: monospace; display: block; margin-top: 3px; }
+        .row-label { font-size: 0.55em; color: #999; display: block; text-transform: uppercase; margin-bottom: 2px; }
 
-        .adv-row { background: rgba(206, 147, 216, 0.05); }
-        .adv-label { color: var(--adv-color) !important; }
-
-        .builder-card { width: 100%; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 2px dashed var(--border-color); box-sizing: border-box; }
-        .prog-display { display: flex; gap: 8px; min-height: 50px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-        .prog-chord { background: var(--primary-green); color: white; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
-        
-        .sug-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
-        .sug-btn { padding: 5px 10px; border-radius: 4px; border: 1px solid var(--primary-green); background: none; color: var(--primary-green); cursor: pointer; font-size: 0.75em; font-weight: bold; }
+        .builder-card { width: 100%; background: var(--card-bg); border-radius: 12px; padding: 20px; border: 2px dashed var(--border); box-sizing: border-box; }
+        .prog-display { display: flex; gap: 10px; min-height: 60px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .prog-chord { background: var(--primary); color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 0.9em; position: relative; }
+        .sug-list { display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 15px; }
+        .sug-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .sug-btn { padding: 5px 12px; border-radius: 4px; border: 1px solid var(--primary); background: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 0.8em; }
+        .sug-label { font-size: 0.6em; color: #888; font-style: italic; }
     </style>
 </head>
 <body>
@@ -62,21 +53,31 @@
             <h3>Tonalità / Alterazioni</h3>
             <div id="sig-list"></div>
         </div>
+        
+        <div class="side-card">
+            <h3>Legenda Armonia Avanzata</h3>
+            <div style="font-size: 0.85em; line-height: 1.4;">
+                <p><b>V/ii - V/V:</b> Dominanti secondarie. Accordi di 7ª che risolvono su gradi diversi dal I.</p>
+                <p><b>SubV7:</b> Sostituzione di Tritono. Accordo di 7ª a distanza di tritono dalla dominante.</p>
+                <p><b>iv min:</b> Interscambio modale. Accordo preso in prestito dalla scala minore parallela.</p>
+                <p><b>bVII7:</b> Backdoor Dominant. Risolve al I salendo di un tono.</p>
+            </div>
+        </div>
+
         <div class="side-card">
             <h3>Gradi ed Intervalli</h3>
-            <table class="memo-table">
-                <tr><td><b>I</b></td><td>Maj7</td><td>1, 3M, 5G, 7M</td></tr>
-                <tr><td><b>ii</b></td><td>min7</td><td>1, 3m, 5G, 7m</td></tr>
-                <tr><td><b>V</b></td><td>7 (Dom)</td><td>1, 3M, 5G, 7m</td></tr>
-                <tr><td><b>vii°</b></td><td>m7♭5</td><td>1, 3m, 5dim, 7m</td></tr>
+            <table style="width:100%; font-size:0.9em;">
+                <tr><td><b>I</b></td><td>Maj7</td><td>1-3M-5G-7M</td></tr>
+                <tr><td><b>ii</b></td><td>min7</td><td>1-3m-5G-7m</td></tr>
+                <tr><td><b>V</b></td><td>7</td><td>1-3M-5G-7m</td></tr>
             </table>
         </div>
     </div>
 
     <div class="main-content">
         <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 style="margin:0">Harmonic Dashboard Pro</h2>
-            <button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; border-radius:20px; padding:4px 12px;">🌓 Dark Mode</button>
+            <h2 style="margin:0">Harmonic Dashboard Ultra</h2>
+            <button onclick="document.body.classList.toggle('dark-mode')" style="cursor:pointer; border-radius:20px; padding:5px 15px;">🌓 Dark Mode</button>
         </div>
 
         <div class="circle-wrapper" id="circle">
@@ -87,28 +88,33 @@
         </div>
 
         <div class="info-card">
-            <div class="card-header"><span id="maj-label">Maggiore</span></div>
-            <table class="harm-table">
-                <thead><tr style="font-size:0.6em; color:#999;"><th>I</th><th>ii</th><th>iii</th><th>IV</th><th>V</th><th>vi</th><th>vii°</th></tr></thead>
-                <tbody id="maj-body"></tbody>
+            <div class="card-header" id="maj-label">Maggiore</div>
+            <table>
+                <tr id="maj-tri"></tr>
+                <tr id="maj-quad" style="color:var(--accent)"></tr>
             </table>
         </div>
 
-        <div class="info-card" style="border-color: var(--adv-color);">
-            <div class="card-header" style="background: rgba(206,147,216,0.1);"><span style="color:var(--adv-color)">Armonia Funzionale Avanzata</span></div>
-            <table class="harm-table">
-                <tr id="adv-row-1" class="adv-row"></tr>
-                <tr id="adv-row-2" class="adv-row"></tr>
+        <div class="info-card">
+            <div class="card-header" id="min-label">Minore Naturale</div>
+            <table>
+                <tr id="min-tri"></tr>
+                <tr id="min-quad" style="color:var(--accent)"></tr>
             </table>
+        </div>
+
+        <div class="info-card" style="border-color: var(--adv);">
+            <div class="card-header" style="background:rgba(206,147,216,0.1); color:var(--adv)">Armonia Avanzata</div>
+            <table><tr id="adv-row"></tr></table>
         </div>
 
         <div class="builder-card">
-            <div style="display:flex; justify-content:space-between; font-size:0.75em; margin-bottom:5px;">
-                <strong>Progression Builder</strong>
-                <button onclick="clearProg()" style="cursor:pointer">Clear</button>
-            </div>
+            <strong>Progression Builder (Clicca gli accordi nelle tabelle)</strong>
             <div class="prog-display" id="prog-display"></div>
-            <div id="sug-list" class="sug-list"></div>
+            <div id="sug-container" style="display:none;">
+                <div class="sug-list" id="sug-list"></div>
+            </div>
+            <button onclick="clearProg()" style="margin-top:10px; font-size:0.7em; cursor:pointer;">Pulisci</button>
         </div>
     </div>
 </div>
@@ -132,10 +138,17 @@
     const chromatic = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
     const majT = ["", "m", "m", "", "", "m", "°"];
     const majQ = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7♭5"];
+    const minT = ["m", "°", "", "m", "m", "", ""];
+    const minQ = ["m7", "m7♭5", "maj7", "m7", "m7", "maj7", "7"];
+
+    function getSpelling(scale, idx, type) {
+        const r = scale[idx], t = scale[(idx+2)%7], f = scale[(idx+4)%7];
+        if(type === 'tri') return `${r}-${t}-${f}`;
+        return `${r}-${t}-${f}-${scale[(idx+6)%7]}`;
+    }
 
     function getNoteAt(keyIdx, semitones) {
         let root = data[keyIdx].maj.replace('♭','b').replace('♯','#');
-        // Normalizzazione per il sistema
         const map = {"Gb":"F#", "Db":"C#", "Ab":"G#", "Eb":"D#", "Bb":"A#"};
         root = map[root] || root;
         let startIdx = chromatic.indexOf(root.replace('b','#'));
@@ -145,7 +158,7 @@
     function init() {
         data.forEach((item, i) => {
             const angle = (i * 30 - 90) * (Math.PI / 180);
-            const x = 210 + 165 * Math.cos(angle), y = 210 + 165 * Math.sin(angle);
+            const x = 220 + 175 * Math.cos(angle), y = 220 + 175 * Math.sin(angle);
             const btn = document.createElement('div');
             btn.className = 'note-btn'; btn.style.left = x+'px'; btn.style.top = y+'px';
             btn.innerHTML = `<b>${item.maj}</b><small>${item.min}</small>`;
@@ -154,7 +167,7 @@
 
             const row = document.createElement('div');
             row.className = 'sig-row'; row.id = 'sig-'+i;
-            row.innerHTML = `<span>${item.maj}</span><span style="color:var(--accent-gold)">${item.alts}</span>`;
+            row.innerHTML = `<span>${item.maj}</span><span style="color:var(--accent)">${item.alts}</span>`;
             row.onclick = () => update(i);
             document.getElementById('sig-list').appendChild(row);
         });
@@ -172,54 +185,59 @@
             const pos = (idx + offset + 12) % 12;
             const angle = (pos * 30 - 90) * (Math.PI / 180);
             const dot = document.getElementById('deg-'+i);
-            dot.style.left = (210 + 115 * Math.cos(angle) - 11) + 'px';
-            dot.style.top = (210 + 115 * Math.sin(angle) - 11) + 'px';
+            dot.style.left = (220 + 120 * Math.cos(angle) - 11) + 'px';
+            dot.style.top = (220 + 120 * Math.sin(angle) - 11) + 'px';
         });
 
-        // Tabella Standard
-        document.getElementById('maj-body').innerHTML = `<tr>${s.notes.map((n, i) => 
-            `<td onclick="addCh('${n}${majQ[i]}', ${i})"><span class="row-label">Grado ${i+1}</span><span class="chord-name">${n}${majQ[i]}</span></td>`).join('')}</tr>`;
+        // Tabelle Maggiore
+        document.getElementById('maj-label').innerText = s.maj + " Maggiore";
+        document.getElementById('maj-tri').innerHTML = s.notes.map((n, i) => `<td onclick="addChord('${n}${majT[i]}', ${i})"><span class="row-label">Triade</span><span class="chord-name">${n}${majT[i]}</span><span class="chord-notes">${getSpelling(s.notes, i, 'tri')}</span></td>`).join('');
+        document.getElementById('maj-quad').innerHTML = s.notes.map((n, i) => `<td onclick="addChord('${n}${majQ[i]}', ${i})"><span class="row-label">Quad.</span><span class="chord-name">${n}${majQ[i]}</span><span class="chord-notes">${getSpelling(s.notes, i, 'quad')}</span></td>`).join('');
 
-        // ARMONIA AVANZATA (Logica integrata)
-        const v2 = getNoteAt(idx, 9) + "7"; // V/ii
-        const v5 = getNoteAt(idx, 2) + "7"; // V/V
-        const subV = getNoteAt(idx, 1) + "7"; // SubV7
-        const ivM = getNoteAt(idx, 5) + "m6"; // iv minor (Modal Interchange)
-        const bVII = getNoteAt(idx, 10) + "7"; // bVII7 (Backdoor)
+        // Tabelle Minore
+        const minN = [...s.notes.slice(5), ...s.notes.slice(0, 5)];
+        document.getElementById('min-label').innerText = s.min + " Naturale";
+        document.getElementById('min-tri').innerHTML = minN.map((n, i) => `<td onclick="addChord('${n}${minT[i]}', ${(i+5)%7})"><span class="row-label">Triade</span><span class="chord-name">${n}${minT[i]}</span><span class="chord-notes">${getSpelling(minN, i, 'tri')}</span></td>`).join('');
+        document.getElementById('min-quad').innerHTML = minN.map((n, i) => `<td onclick="addChord('${n}${minQ[i]}', ${(i+5)%7})"><span class="row-label">Quad.</span><span class="chord-name">${n}${minQ[i]}</span><span class="chord-notes">${getSpelling(minN, i, 'quad')}</span></td>`).join('');
 
-        document.getElementById('adv-row-1').innerHTML = `
-            <td colspan="2" onclick="addCh('${v2}', -1)"><span class="row-label adv-label">Dom. Secondaria (V/ii)</span><b>${v2}</b></td>
-            <td colspan="2" onclick="addCh('${v5}', -1)"><span class="row-label adv-label">Dom. Secondaria (V/V)</span><b>${v5}</b></td>
-            <td colspan="3" onclick="addCh('${subV}', -1)"><span class="row-label adv-label">Sost. Tritono (SubV7)</span><b>${subV}</b></td>`;
-        
-        document.getElementById('adv-row-2').innerHTML = `
-            <td colspan="3" onclick="addCh('${ivM}', -1)"><span class="row-label adv-label">Interscambio (iv min)</span><b>${ivM}</b></td>
-            <td colspan="4" onclick="addCh('${bVII}', -1)"><span class="row-label adv-label">Backdoor (bVII7)</span><b>${bVII}</b></td>`;
+        // Avanzata
+        const v2 = getNoteAt(idx, 9) + "7", v5 = getNoteAt(idx, 2) + "7", sub = getNoteAt(idx, 1) + "7", ivm = getNoteAt(idx, 5) + "m6";
+        document.getElementById('adv-row').innerHTML = `
+            <td onclick="addChord('${v2}', -1)"><span class="row-label">V/ii</span><b>${v2}</b></td>
+            <td onclick="addChord('${v5}', -1)"><span class="row-label">V/V</span><b>${v5}</b></td>
+            <td onclick="addChord('${sub}', -1)"><span class="row-label">SubV7</span><b>${sub}</b></td>
+            <td onclick="addChord('${ivm}', -1)"><span class="row-label">iv min</span><b>${ivm}</b></td>`;
     }
 
-    function addCh(name, deg) {
-        const div = document.createElement('div');
-        div.className = 'prog-chord'; div.innerText = name;
-        document.getElementById('prog-display').appendChild(div);
+    const logic = {
+        0: [{d:4, t:"Perfetta"}, {d:3, t:"Plagale"}, {d:5, t:"Inganno"}],
+        4: [{d:0, t:"Risoluzione"}, {d:5, t:"Deceptive"}],
+        1: [{d:4, t:"ii-V-I"}],
+        3: [{d:4, t:"Sospesa"}]
+    };
+
+    function addChord(name, deg) {
+        const d = document.getElementById('prog-display');
+        const c = document.createElement('div'); c.className = 'prog-chord'; c.innerText = name;
+        d.appendChild(c);
         
-        // Suggerimenti rapidi (Logica semplificata)
-        const list = document.getElementById('sug-list');
-        list.innerHTML = '<small>Suggeriti: </small>';
-        const sug = deg === 4 ? [0] : [4, 3, 5]; // Se clicchi V suggerisci I, altrimenti IV, V, vi
-        sug.forEach(sIdx => {
-            const n = data[currentIdx()].notes[sIdx] + majQ[sIdx];
-            const b = document.createElement('button'); b.className = 'sug-btn'; b.innerText = 'Vai a ' + n;
-            b.onclick = () => addCh(n, sIdx);
-            list.appendChild(b);
+        if(deg === -1) return;
+        const sBox = document.getElementById('sug-container');
+        const sList = document.getElementById('sug-list');
+        sBox.style.display = 'block'; sList.innerHTML = '';
+
+        const currentScale = data.find(d => d.maj === document.querySelector('.note-btn.active b').innerText).notes;
+        (logic[deg] || [{d:0, t:"Ritorno"}]).forEach(opt => {
+            const item = document.createElement('div'); item.className = 'sug-item';
+            const btn = document.createElement('button'); btn.className = 'sug-btn';
+            const n = currentScale[opt.d] + majQ[opt.d];
+            btn.innerText = n; btn.onclick = () => addChord(n, opt.d);
+            const lab = document.createElement('span'); lab.className = 'sug-label'; lab.innerText = opt.t;
+            item.append(btn, lab); sList.append(item);
         });
     }
 
-    function currentIdx() {
-        return data.findIndex(d => d.maj === document.querySelector('.note-btn.active b').innerText);
-    }
-
-    function clearProg() { document.getElementById('prog-display').innerHTML = ''; document.getElementById('sug-list').innerHTML = ''; }
-
+    function clearProg() { document.getElementById('prog-display').innerHTML = ''; document.getElementById('sug-container').style.display = 'none'; }
     init();
 </script>
 </body>
