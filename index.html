@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmonic Dashboard Evolution II - Pro</title>
+    <title>Harmonic Dashboard Evolution II - Pro Full</title>
     <style>
         :root {
             --primary: #66bb6a; --dark-bg: #f4f7f6; --card-bg: #ffffff;
@@ -15,68 +15,86 @@
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); margin: 0; padding: 20px; color: var(--text); transition: 0.3s; }
         
-        .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; max-width: 1500px; margin: 0 auto; }
+        .layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; max-width: 1600px; margin: 0 auto; }
         
-        /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; gap: 15px; }
-        .side-card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85em; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .side-card h3 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
+        /* SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 15px; height: fit-content; }
+        .side-card { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.82em; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .side-card h3 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; font-size: 1.1em; }
+        .side-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .side-table td { padding: 5px; border-bottom: 1px solid var(--border); }
+        .side-table b { color: var(--primary); }
 
-        /* Main */
+        /* MAIN CONTENT */
         .main-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .circle-wrapper { position: relative; width: 440px; height: 440px; background: var(--card-bg); border-radius: 50%; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        .note-btn { position: absolute; width: 65px; height: 65px; margin: -32px; border-radius: 50%; border: 4px solid var(--card-bg); background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .note-btn { position: absolute; width: 65px; height: 65px; margin: -32px; border-radius: 50%; border: 4px solid var(--card-bg); background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; z-index: 5; }
         .note-btn.active { background: #333; transform: scale(1.1); box-shadow: 0 0 20px var(--primary); }
         .degree-marker { position: absolute; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; font-size: 9px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10; border: 2px solid white; transition: 0.5s; }
 
-        /* Tabelle e Accordi */
-        .info-card { width: 100%; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-        .card-header { background: rgba(0,0,0,0.03); padding: 10px 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td { padding: 12px 5px; text-align: center; cursor: pointer; border-right: 1px solid var(--border); transition: 0.2s; }
-        td:hover { filter: brightness(0.9); }
+        /* ACCORDI E TABELLE */
+        .info-card { width: 100%; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { background: rgba(0,0,0,0.03); padding: 12px 20px; font-weight: bold; display: flex; justify-content: space-between; }
+        .chord-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .chord-table td { padding: 15px 5px; text-align: center; cursor: pointer; border-right: 1px solid var(--border); transition: 0.2s; }
+        .chord-table td:hover { filter: brightness(0.95); transform: translateY(-2px); }
         
-        /* Funzioni Armoniche - Color Coding */
-        .f-tonica { background-color: var(--tonica); color: #1b5e20; }
-        .f-sottodom { background-color: var(--sottodom); color: #f57f17; }
-        .f-dom { background-color: var(--dom); color: #b71c1c; }
+        .f-tonica { background-color: var(--tonica) !important; color: #1b5e20; }
+        .f-sottodom { background-color: var(--sottodom) !important; color: #f57f17; }
+        .f-dom { background-color: var(--dom) !important; color: #b71c1c; }
 
         .ch-name { font-weight: bold; display: block; font-size: 1.1em; }
-        .ch-notes { font-size: 0.65em; opacity: 0.7; font-family: monospace; display: block; }
-        .ch-label { font-size: 0.55em; text-transform: uppercase; display: block; margin-bottom: 2px; opacity: 0.8; }
+        .ch-notes { font-size: 0.65em; opacity: 0.8; font-family: monospace; display: block; }
+        .ch-label { font-size: 0.55em; text-transform: uppercase; display: block; margin-bottom: 2px; }
 
-        /* Builder e Suggerimenti */
+        /* PROGRESSION BUILDER */
         .builder-container { width: 100%; background: var(--card-bg); padding: 20px; border-radius: 12px; border: 2px dashed var(--primary); box-sizing: border-box; }
-        .prog-display { display: flex; gap: 10px; min-height: 60px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
-        .chord-tag { padding: 8px 15px; background: var(--primary); color: white; border-radius: 6px; font-weight: bold; font-size: 0.9em; cursor: pointer; }
+        .prog-display { display: flex; gap: 10px; min-height: 65px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--border); }
+        .chord-tag { padding: 8px 15px; background: var(--primary); color: white; border-radius: 6px; font-weight: bold; font-size: 0.9em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { from {transform: scale(0.5); opacity:0;} to {transform: scale(1); opacity:1;} }
         
-        .sug-box { border-top: 1px solid var(--border); padding-top: 15px; display: none; }
-        .sug-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .sug-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .sug-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--primary); background: none; color: var(--primary); cursor: pointer; font-size: 0.8em; font-weight: bold; transition: 0.2s; }
         .sug-btn:hover { background: var(--primary); color: white; }
     </style>
 </head>
-<body>
+<body class="dark-mode">
 
 <div class="layout">
     <div class="sidebar">
         <div class="side-card">
-            <h3>Legenda Avanzata</h3>
-            <p><b>SubV7:</b> Sostituzione Tritono. Risoluzione cromatica.</p>
-            <p><b>V/ii:</b> Dominante Secondaria. Prepara il II grado.</p>
-            <p><b>iv min:</b> Scambio Modale. Colore malinconico.</p>
-            <p><b>bVII7:</b> Backdoor. Risoluzione alternativa al I.</p>
+            <h3>Legenda Armonia Avanzata</h3>
+            <p><b>SubV7:</b> Sostituzione di Tritono. Crea tensione cromatica fluida.</p>
+            <p><b>V/ii - V/V:</b> Dominanti secondarie per modulazioni temporanee.</p>
+            <p><b>iv min:</b> Scambio Modale. Colore malinconico dal modo minore.</p>
+            <p><b>bVII7:</b> Backdoor Dominant. Risoluzione elegante al I.</p>
         </div>
+
+        <div class="side-card">
+            <h3>Gradi ed Intervalli</h3>
+            <table class="side-table">
+                <tr><td><b>I</b></td><td>Tonica (Maj7)</td><td>1-3-5-7</td></tr>
+                <tr><td><b>bII</b></td><td>Napoletana</td><td>1-b2-b5</td></tr>
+                <tr><td><b>ii</b></td><td>Sottodom. (m7)</td><td>1-b3-5-b7</td></tr>
+                <tr><td><b>iii</b></td><td>Mediante (m7)</td><td>1-b3-5-b7</td></tr>
+                <tr><td><b>IV</b></td><td>Sottodom. (Maj7)</td><td>1-3-5-7</td></tr>
+                <tr><td><b>V</b></td><td>Dominante (7)</td><td>1-3-5-b7</td></tr>
+                <tr><td><b>vi</b></td><td>Relativa (m7)</td><td>1-b3-5-b7</td></tr>
+                <tr><td><b>vii°</b></td><td>Sensibile (m7b5)</td><td>1-b3-b5-b7</td></tr>
+            </table>
+        </div>
+
         <div class="side-card">
             <h3>Analisi Funzionale</h3>
-            <div style="display:flex; flex-direction:column; gap:5px;">
-                <span style="background:var(--tonica); padding:3px; border-radius:4px;">Stabilità (I, vi, iii)</span>
-                <span style="background:var(--sottodom); padding:3px; border-radius:4px;">Movimento (IV, ii)</span>
-                <span style="background:var(--dom); padding:3px; border-radius:4px;">Tensione (V, vii°)</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="f-tonica" style="padding:8px; border-radius:6px; font-weight:bold;">Stabilità (Punto di riposo)</div>
+                <div class="f-sottodom" style="padding:8px; border-radius:6px; font-weight:bold;">Movimento (Allontanamento)</div>
+                <div class="f-dom" style="padding:8px; border-radius:6px; font-weight:bold;">Tensione (Ritorno forzato)</div>
             </div>
         </div>
-        <button onclick="document.body.classList.toggle('dark-mode')" style="width:100%; padding:10px; cursor:pointer; border-radius:8px; border:1px solid var(--border);">🌓 Dark Mode</button>
+
+        <button onclick="document.body.classList.toggle('dark-mode')" style="width:100%; padding:12px; cursor:pointer; border-radius:8px; font-weight:bold; background:var(--card-bg); color:var(--text); border:1px solid var(--border);">🌓 Switch Theme</button>
     </div>
 
     <div class="main-content">
@@ -91,8 +109,8 @@
         </div>
 
         <div class="info-card">
-            <div class="card-header"><span id="maj-title">Maggiore</span> <span>Triadi & Quadriadi</span></div>
-            <table>
+            <div class="card-header"><span id="maj-title">Maggiore</span> <span>Armonizzazione Diatonica</span></div>
+            <table class="chord-table">
                 <tr id="maj-tri"></tr>
                 <tr id="maj-quad"></tr>
             </table>
@@ -100,22 +118,23 @@
 
         <div class="info-card">
             <div class="card-header"><span id="min-title">Minore Naturale</span></div>
-            <table>
+            <table class="chord-table">
                 <tr id="min-tri"></tr>
                 <tr id="min-quad"></tr>
             </table>
         </div>
 
         <div class="builder-container">
-            <strong>Progression Builder</strong>
-            <div class="prog-display" id="prog-display"></div>
-            <div style="display:flex; gap:10px;">
-                <button onclick="playFullProg()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">▶ Play Sequence</button>
-                <button onclick="clearProg()" style="background:none; border:1px solid #ccc; padding:10px 20px; border-radius:6px; cursor:pointer;">Reset</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong>Progression Builder</strong>
+                <button onclick="clearProg()" style="font-size:0.8em; padding:4px 10px; cursor:pointer; border-radius:4px; border:1px solid #ccc; background:none; color:inherit;">Svuota</button>
             </div>
-            
-            <div class="sug-box" id="sug-box">
-                <div style="font-size:0.75em; font-weight:bold; color:#888; text-transform:uppercase;">Suggerimenti per il prossimo accordo:</div>
+            <div class="prog-display" id="prog-display"></div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button onclick="playFullProg()" style="background:var(--primary); color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer; font-weight:bold; flex-grow:1;">▶ Riproduci Sequenza</button>
+            </div>
+            <div id="sug-box" style="display:none; border-top:1px solid var(--border); padding-top:15px;">
+                <small style="color:#888; text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">Suggerimenti Armonici:</small>
                 <div class="sug-list" id="sug-list"></div>
             </div>
         </div>
@@ -123,154 +142,133 @@
 </div>
 
 <script>
-    // AUDIO ENGINE
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const notesFreq = {"C":261.63,"C#":277.18,"D":293.66,"D#":311.13,"E":329.63,"F":349.23,"F#":369.99,"G":392.00,"G#":415.30,"A":440.00,"A#":466.16,"B":493.88,"C2":523.25,"D2":587.33,"E2":659.25};
-    
-    const dataKeys = [
-        { name: "C", notes: ["C","D","E","F","G","A","B"] },
-        { name: "G", notes: ["G","A","B","C","D","E","F#"] },
-        { name: "D", notes: ["D","E","F#","G","A","B","C#"] },
-        { name: "A", notes: ["A","B","C#","D","E","F#","G#"] },
-        { name: "E", notes: ["E","F#","G#","A","B","C#","D#"] },
-        { name: "B", notes: ["B","C#","D#","E","F#","G#","A#"] },
-        { name: "F", notes: ["F","G","A","Bb","C","D","E"] } // Bb semplificato in A# per logica audio
-    ];
-
-    const funcColors = ["f-tonica", "f-sottodom", "f-tonica", "f-sottodom", "f-dom", "f-tonica", "f-dom"];
-    const majT = ["", "m", "m", "", "", "m", "°"];
-    const majQ = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
-    
-    let currentProg = [];
-
-    function playNote(freq, start, dur) {
-        const osc = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, start);
-        g.gain.setValueAtTime(0.1, start);
-        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-        osc.connect(g); g.connect(audioCtx.destination);
-        osc.start(start); osc.stop(start + dur);
-    }
+    let audioCtx = null;
+    const freqs = {"C":261.63,"C#":277.18,"D":293.66,"D#":311.13,"E":329.63,"F":349.23,"F#":369.99,"G":392.00,"G#":415.30,"A":440.00,"A#":466.16,"B":493.88,"C2":523.25,"D2":587.33,"E2":659.25,"F2":698.46,"G2":783.99,"A2":880.00};
 
     function playChord(notes) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
         notes.forEach((n, i) => {
-            let f = notesFreq[n.replace('Bb', 'A#')] || notesFreq[n[0]];
-            if (i > 0 && f < notesFreq[notes[0]]) f *= 2; 
-            playNote(f, audioCtx.currentTime, 1.5);
+            let name = n.replace('♭', '#').replace('Bb', 'A#');
+            let f = freqs[name] || freqs[name[0]];
+            if (i > 0 && f < freqs[notes[0]]) f *= 2; 
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, now);
+            g.gain.setValueAtTime(0.1, now);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 1.2);
         });
     }
 
-    // UI LOGIC
+    const scaleData = [
+        { n: "C", notes: ["C","D","E","F","G","A","B"] },
+        { n: "G", notes: ["G","A","B","C","D","E","F#"] },
+        { n: "D", notes: ["D","E","F#","G","A","B","C#"] },
+        { n: "A", notes: ["A","B","C#","D","E","F#","G#"] },
+        { n: "E", notes: ["E","F#","G#","A","B","C#","D#"] },
+        { n: "B", notes: ["B","C#","D#","E","F#","G#","A#"] },
+        { n: "F", notes: ["F","G","A","Bb","C","D","E"] }
+    ];
+
+    const fColors = ["f-tonica", "f-sottodom", "f-tonica", "f-sottodom", "f-dom", "f-tonica", "f-dom"];
+    const majT = ["", "m", "m", "", "", "m", "°"];
+    const majQ = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
+    let currentProg = [];
+
     function init() {
-        dataKeys.forEach((item, i) => {
+        const circle = document.getElementById('circle');
+        scaleData.forEach((k, i) => {
             const angle = (i * 30 - 90) * (Math.PI / 180);
             const btn = document.createElement('div');
             btn.className = 'note-btn';
             btn.style.left = (220 + 185 * Math.cos(angle)) + 'px';
             btn.style.top = (220 + 185 * Math.sin(angle)) + 'px';
-            btn.innerHTML = item.name;
+            btn.innerText = k.n;
             btn.onclick = () => update(i);
-            btn.id = 'key-' + i;
-            document.getElementById('circle').appendChild(btn);
+            btn.id = 'k-' + i;
+            circle.appendChild(btn);
         });
         update(0);
     }
 
     function update(idx) {
-        const key = dataKeys[idx];
+        const key = scaleData[idx];
         document.querySelectorAll('.note-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('key-'+idx).classList.add('active');
+        document.getElementById('k-'+idx).classList.add('active');
 
-        // Sposta i gradi
-        const offsets = [0, 2, 4, -1, 1, 3, 5];
-        offsets.forEach((off, i) => {
+        [0, 2, 4, -1, 1, 3, 5].forEach((off, i) => {
             const pos = (idx + off + 12) % 12;
             const angle = (pos * 30 - 90) * (Math.PI / 180);
-            const dot = document.getElementById('deg-'+i);
-            dot.style.left = (220 + 135 * Math.cos(angle) - 11) + 'px';
-            dot.style.top = (220 + 135 * Math.sin(angle) - 11) + 'px';
+            const m = document.getElementById('deg-'+i);
+            m.style.left = (220 + 135 * Math.cos(angle) - 11) + 'px';
+            m.style.top = (220 + 135 * Math.sin(angle) - 11) + 'px';
         });
 
-        // Popola Tabelle
-        const renderTable = (rowId, notes, types, intervals, label) => {
-            const row = document.getElementById(rowId);
+        const fill = (id, notes, types, label, isQuad) => {
+            const row = document.getElementById(id);
             row.innerHTML = notes.map((n, i) => {
-                const chordNotes = intervals.map(v => notes[(i + v) % 7]);
-                const cls = funcColors[i];
-                return `<td class="${cls}" onclick="addChord('${n}${types[i]}', ${JSON.stringify(chordNotes)}, ${i})">
-                    <span class="ch-label">${label}</span>
-                    <span class="ch-name">${n}${types[i]}</span>
-                    <span class="ch-notes">${chordNotes.join('-')}</span>
+                const chordNotes = isQuad ? [0,2,4,6].map(v => notes[(i+v)%7]) : [0,2,4].map(v => notes[(i+v)%7]);
+                return `<td class="${fColors[i]}" onclick="addToBuilder('${n}${types[i]}', ${JSON.stringify(chordNotes)}, ${i})">
+                    <span class="ch-label">${label}</span><span class="ch-name">${n}${types[i]}</span><span class="ch-notes">${chordNotes.join('-')}</span>
                 </td>`;
             }).join('');
         };
 
-        renderTable('maj-tri', key.notes, majT, [0,2,4], "Triade");
-        renderTable('maj-quad', key.notes, majQ, [0,2,4,6], "Quadriade");
-
+        document.getElementById('maj-title').innerText = "Scala di " + key.n + " Maggiore";
+        fill('maj-tri', key.notes, majT, "Triade", false);
+        fill('maj-quad', key.notes, majQ, "Quadriade", true);
+        
         const minNotes = [...key.notes.slice(5), ...key.notes.slice(0, 5)];
         const minT = ["m", "°", "", "m", "m", "", ""];
         const minQ = ["m7", "m7b5", "maj7", "m7", "m7", "maj7", "7"];
-        renderTable('min-tri', minNotes, minT, [0,2,4], "Triade");
-        renderTable('min-quad', minNotes, minQ, [0,2,4,6], "Quadriade");
+        document.getElementById('min-title').innerText = "Scala di " + scaleData[(idx+5)%7].notes[0] + " Minore Naturale";
+        fill('min-tri', minNotes, minT, "Triade", false);
+        fill('min-quad', minNotes, minQ, "Quadriade", true);
     }
 
-    // PROGRESSION LOGIC
-    function addChord(name, notes, deg) {
+    function addToBuilder(name, notes, deg) {
         playChord(notes);
-        currentProg.push({name, notes, deg});
-        renderProg();
-        showSuggestions(deg);
-    }
-
-    function renderProg() {
-        const container = document.getElementById('prog-display');
-        container.innerHTML = currentProg.map(c => `<div class="chord-tag">${c.name}</div>`).join('');
-    }
-
-    function showSuggestions(deg) {
-        const box = document.getElementById('sug-box');
-        const list = document.getElementById('sug-list');
-        box.style.display = 'block';
-        list.innerHTML = '';
-
-        const rules = {
-            0: [{d:3, t:"IV (Plagale)"}, {d:4, t:"V (Sospesa)"}, {d:5, t:"vi (Relativa)"}],
-            4: [{d:0, t:"I (Perfetta)"}, {d:5, t:"vi (Inganno)"}],
-            1: [{d:4, t:"V7 (Jazz ii-V)"}],
-            3: [{d:4, t:"V7 (Dominante)"}, {d:0, t:"I (Aperta)"}]
-        };
-
-        const currentKeyNotes = dataKeys.find(k => k.name === document.querySelector('.note-btn.active').innerText).notes;
-        (rules[deg] || [{d:0, t:"Torna al I"}]).forEach(r => {
-            const btn = document.createElement('button');
-            btn.className = 'sug-btn';
-            btn.innerHTML = `${currentKeyNotes[r.d]}${majQ[r.d]}<br><small>${r.t}</small>`;
-            btn.onclick = () => {
-                const notes = [0,2,4,6].map(v => currentKeyNotes[(r.d + v)%7]);
-                addChord(currentKeyNotes[r.d] + majQ[r.d], notes, r.d);
-            };
-            list.appendChild(btn);
+        currentProg.push({name, notes});
+        const disp = document.getElementById('prog-display');
+        const tag = document.createElement('div');
+        tag.className = 'chord-tag';
+        tag.innerText = name;
+        disp.appendChild(tag);
+        
+        const sugBox = document.getElementById('sug-box');
+        const sugList = document.getElementById('sug-list');
+        sugBox.style.display = 'block';
+        sugList.innerHTML = '';
+        
+        const currentScale = scaleData.find(k => k.n === document.querySelector('.note-btn.active').innerText).notes;
+        const logic = { 0:[3,4,5], 4:[0,5], 1:[4], 3:[4,0] };
+        (logic[deg] || [0]).forEach(dIdx => {
+            const sBtn = document.createElement('button');
+            sBtn.className = 'sug-btn';
+            sBtn.innerText = currentScale[dIdx] + majQ[dIdx];
+            sBtn.onclick = () => addToBuilder(currentScale[dIdx] + majQ[dIdx], [0,2,4,6].map(v => currentScale[(dIdx+v)%7]), dIdx);
+            sugList.appendChild(sBtn);
         });
     }
 
     function playFullProg() {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (!currentProg.length) return;
         currentProg.forEach((c, i) => {
-            setTimeout(() => playChord(c.notes), i * 1200);
+            setTimeout(() => playChord(c.notes), i * 1100);
         });
     }
 
     function clearProg() {
         currentProg = [];
-        renderProg();
+        document.getElementById('prog-display').innerHTML = '';
         document.getElementById('sug-box').style.display = 'none';
     }
 
-    init();
+    window.onload = init;
 </script>
 </body>
 </html>
